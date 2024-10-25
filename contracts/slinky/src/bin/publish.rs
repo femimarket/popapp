@@ -12,7 +12,7 @@ use slinky::{
 };
 
 use abstract_adapter::objects::namespace::Namespace;
-use abstract_client::{AbstractClient, AccountBuilder, Publisher, PublisherBuilder};
+use abstract_client::{AbstractClient, AccountBuilder, Publisher};
 use clap::Parser;
 use cw_orch::{anyhow, daemon::networks::parse_network, prelude::*, tokio::runtime::Runtime};
 
@@ -33,16 +33,10 @@ fn publish(networks: Vec<ChainInfo>) -> anyhow::Result<()> {
         let abstract_client: AbstractClient<Daemon> = AbstractClient::new(chain.clone())?;
 
         // // Get the [`Publisher`] that owns the namespace, otherwise create a new one and claim the namespace
-        // let publisher_acc = abstract_client
-        //     .account_builder()
-        //     .namespace(adapter_namespace)
-        //     .build()?;
-
+        let publisher_acc = abstract_client.fetch_account(adapter_namespace)?;
 
         // Get the [`Publisher`] that owns the namespace, otherwise create a new one and claim the namespace
-        let publisher: Publisher<_> = abstract_client
-            .publisher_builder(adapter_namespace)
-            .build()?;
+        let publisher: Publisher<_> = Publisher::new(&publisher_acc)?;
 
         // let publisher = PublisherBuilder::new(AccountBuilder::new(&abstr), namespace)
 

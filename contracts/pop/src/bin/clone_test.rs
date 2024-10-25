@@ -27,7 +27,7 @@ fn main() -> anyhow::Result<()> {
 
     let test_account = abstract_client
         .account_builder()
-        .install_on_sub_account(false)
+        // .sub_account(false)
         .build()?;
 
     // let slinky = test_account

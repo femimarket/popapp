@@ -1,6 +1,6 @@
 [package]
 name = "pop"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["u <you@example.com>"]
 edition = "2021"
 homepage = ""
@@ -55,7 +55,7 @@ cw-storage-plus = { workspace = true }
 thiserror = { workspace = true }
 schemars = { workspace = true }
 cw-asset = { workspace = true }
-abstract-app = { workspace = true }
+abstract-app = { workspace = true, features = ["stargate"] }
 const_format = { workspace = true }
 
 # Dependencies for interface

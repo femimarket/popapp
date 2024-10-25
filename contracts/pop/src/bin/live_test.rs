@@ -19,7 +19,7 @@ use pop::contract::interface::PopInterface;
 use pop::msg::{PopExecuteMsgFns, PopInstantiateMsg, PopQueryMsg, PopQueryMsgFns};
 use pop::state::{OrderType, Trade};
 
-const TESTACCOUNT: &str = "testaccount6";
+const TESTACCOUNT: &str = "testaccount7";
 
 fn test(networks: Vec<ChainInfo>) -> anyhow::Result<()> {
     // run for each requested network
@@ -41,7 +41,7 @@ fn test(networks: Vec<ChainInfo>) -> anyhow::Result<()> {
         let test_account = abstract_client
             .account_builder()
             .namespace(TESTACCOUNT.try_into()?)
-            .install_on_sub_account(false)
+            // .install_on_sub_account(false)
             .build()?;
 
         let pop_app = test_account

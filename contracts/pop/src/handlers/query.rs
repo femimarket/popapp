@@ -66,7 +66,7 @@ fn query_trade(deps: Deps, env: Env, module: &Pop, base: String,quote: String) -
     // Ok(module.response("reset"))
     Ok(TradeResponse {
         price: price_response,
-    // trade:
+        trade:
     })
 }
 
