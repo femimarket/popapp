@@ -78,7 +78,7 @@ serde = "1.0.208"
 #cosmwasm-std = "2.1.3"
 prost = "0.12.4"
 prost-types = "0.12.4"
-cosmos-sdk-proto = { version = "0.20.0", default-features = false }
+cosmos-sdk-proto = { version = "0.26.0", default-features = false }
 
 cw2 = "2.0.0"
 serde-json-wasm = "1.0.0"
