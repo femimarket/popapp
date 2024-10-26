@@ -7,6 +7,7 @@ use cosmwasm_std::{DepsMut, Env, MessageInfo, StdError};
 use neutron_std::types::slinky::oracle::v1::OracleQuerier;
 use neutron_std::types::slinky::types::v1::CurrencyPair;
 use crate::state::Trade;
+use slinky::api::SlinkyApi;
 
 pub fn execute_handler(
     deps: DepsMut,
@@ -48,44 +49,16 @@ fn reset(deps: DepsMut, env: Env, info: MessageInfo, count: i32, module: Pop) ->
 fn trade(deps: DepsMut, env: Env, info: MessageInfo, trade: Trade, module: Pop) -> PopResult {
     module.admin.assert_admin(deps.as_ref(), &env, &info.sender)?;
 
-    let querier = OracleQuerier::new(&deps.querier);
-    let currency_pair = CurrencyPair {
-        base: "EUR".to_string(),
-        quote: "USD".to_string(),
-    };
-    let price_response = querier.get_price(Some(currency_pair))?;
+    let slinky = module.slinky(deps.as_ref());
 
-    if price_response.nonce == 0 {
-        return Err(
-            PopError::Std(StdError::generic_err("Count not instantiated yet"))
-        )
-        // return Err(
-        //     StdError::generic_err("Count not instantiated yet")
-        // )
-        // return Err(ContractError::PriceIsNil {
-        //     symbol: pair.base.clone(),
-        //     quote: pair.quote.clone(),
-        // });
-    }
+    let split = trade.asset.split("_").collect::<Vec<&str>>();
 
-    let price = price_response
-        .price
-        .ok_or_else(|| {
-            // ContractError::PriceNotAvailable {
-            //     symbol: pair.base.clone(),
-            //     quote: pair.quote.clone(),
-            // }
-            // let err = format!("symbol:{}, quote:{}")
-            return PopError::Std(StdError::generic_err("PriceNotAvailable"))
-        })?;
+    let price_response = slinky.pair(
+        split[0].to_string(),
+        split[1].to_string()
+    )?;
 
-    let max_price_age: u64 = 3; // adjust based on appetite for price freshness
-    let price_age = env.block.height - price.block_height;
-    if price_age > max_price_age {
-        return Err(
-            PopError::Std(StdError::generic_err("price is too old"))
-        );
-    }
+
 
 
     Ok(module.response("reset"))

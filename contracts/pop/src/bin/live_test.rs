@@ -18,8 +18,12 @@ use cw_orch::{anyhow, daemon::networks::parse_network, prelude::*, tokio::runtim
 use pop::contract::interface::PopInterface;
 use pop::msg::{PopExecuteMsgFns, PopInstantiateMsg, PopQueryMsg, PopQueryMsgFns};
 use pop::state::{OrderType, Trade};
+use slinky::msg::{SlinkyQueryMsgFns};
+use abstract_app::std::account::QueryMsgFns as AccountQueryMsgFns;
+use slinky::SlinkyInterface;
+use abstract_app::abstract_interface::AccountExecFns;
 
-const TESTACCOUNT: &str = "testaccount7";
+const TESTACCOUNT: &str = "testaccount9";
 
 fn test(networks: Vec<ChainInfo>) -> anyhow::Result<()> {
     // run for each requested network
@@ -38,11 +42,18 @@ fn test(networks: Vec<ChainInfo>) -> anyhow::Result<()> {
         // Create an [`AbstractClient`]
         let abstract_client: AbstractClient<Daemon> = AbstractClient::new(chain.clone())?;
 
-        let test_account = abstract_client
-            .account_builder()
-            .namespace(TESTACCOUNT.try_into()?)
-            // .install_on_sub_account(false)
-            .build()?;
+
+        let test_account =  match abstract_client
+            .fetch_account(TESTACCOUNT.try_into()?) {
+            Ok(acc) => acc,
+            Err(_) => abstract_client
+                .account_builder()
+                .namespace(TESTACCOUNT.try_into()?)
+                .build()?
+        };
+
+        // test_account.as_ref().uninstall_module(POP_ID)?;
+        // test_account.as_ref().uninstall_module(slinky::SLINKY_ID)?;
 
         let pop_app = test_account
             .install_app_with_dependencies::<PopInterface::<_>>(&PopInstantiateMsg {
@@ -50,18 +61,19 @@ fn test(networks: Vec<ChainInfo>) -> anyhow::Result<()> {
             }, Empty {}, &[])?;
 
 
+
         pop_app.upgrade(None)?;
 
-        // // println!("{:?}",env!("CARGO_PKG_VERSION"));
+        let slinky = test_account.application::<SlinkyInterface<_>>()?;
+        let pairs = slinky.pairs()?;
+
+
+
+        println!("pairs: {:?}",pairs);
         // let resp = pop_app.query(&abstract_app::std::app::QueryMsg::Module(PopQueryMsg::Trade{
         //     base: "BTC".into(),
         //     quote: "USD".into()
         // }))?;
-        // println!("{:#?}", resp);
-
-
-        // let resp = pop_app.pairs()?;
-        //
         // println!("{:#?}", resp);
 
         let resp = pop_app.query_trade("BTC", "USD")?;

@@ -6,6 +6,7 @@ use cosmwasm_std::{to_json_binary, Binary, Deps, Env, StdError, StdResult};
 use neutron_std::types::slinky::oracle::v1::{GetAllCurrencyPairsResponse, GetPriceResponse, OracleQuerier};
 use neutron_std::types::slinky::types::v1::CurrencyPair;
 use slinky::api::{Slinky, SlinkyApi};
+use crate::state::{OrderType, Trade};
 
 pub fn query_handler(
     deps: Deps,
@@ -66,7 +67,17 @@ fn query_trade(deps: Deps, env: Env, module: &Pop, base: String,quote: String) -
     // Ok(module.response("reset"))
     Ok(TradeResponse {
         price: price_response,
-        trade:
+        trade:Trade{
+            price: Default::default(),
+            dt: 0,
+            asset: "".to_string(),
+            qty: Default::default(),
+            order_type: OrderType::Market,
+            buy: false,
+            expire_time: 0,
+            tp: Default::default(),
+            sl: Default::default(),
+        }
     })
 }
 

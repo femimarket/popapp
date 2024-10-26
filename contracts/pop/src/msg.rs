@@ -44,6 +44,12 @@ pub enum PopQueryMsg {
         base: String,
         quote: String
     },
+    // #[cw_orch(fn_name("query_ps"))]
+    // #[returns(TradeResponse)]
+    // Pairs {
+    //     base: String,
+    //     quote: String
+    // },
 
 }
 
@@ -53,6 +59,6 @@ pub struct ConfigResponse {}
 #[cosmwasm_schema::cw_serde]
 pub struct TradeResponse {
     pub price: GetPriceResponse,
-    // pub trade: Trade
+    pub trade: Trade
 }
 
