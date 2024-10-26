@@ -20,7 +20,7 @@ pub fn execute_handler(
         PopExecuteMsg::UpdateConfig {} => update_config(deps, env, info, module),
         PopExecuteMsg::Increment {} => increment(deps, module),
         PopExecuteMsg::Reset { count } => reset(deps, env, info, count, module),
-        PopExecuteMsg::Trade(t) => trade(deps, env, info, t, module),
+        PopExecuteMsg::Trade {data:t} => trade(deps, env, info, t, module),
     }
 }
 

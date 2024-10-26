@@ -16,7 +16,7 @@ pub fn query_handler(
 ) -> PopResult<Binary> {
     match msg {
         PopQueryMsg::Config {} => to_json_binary(&query_config(deps)?),
-        PopQueryMsg::Trade {base,quote} => to_json_binary(&query_trade(deps,_env, module, base,quote)?),
+        PopQueryMsg::QueryTrade {base,quote} => to_json_binary(&query_trade(deps, _env, module, base, quote)?),
     }
     .map_err(Into::into)
 }

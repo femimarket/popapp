@@ -26,7 +26,9 @@ pub enum PopExecuteMsg {
         /// Count value after reset
         count: i32,
     },
-    Trade(Trade),
+    Trade {
+        data: Trade
+    },
 }
 
 #[cosmwasm_schema::cw_serde]
@@ -38,9 +40,8 @@ pub struct PopMigrateMsg {}
 pub enum PopQueryMsg {
     #[returns(ConfigResponse)]
     Config {},
-    #[cw_orch(fn_name("query_trade"))]
     #[returns(TradeResponse)]
-    Trade {
+    QueryTrade {
         base: String,
         quote: String
     },
