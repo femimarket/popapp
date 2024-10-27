@@ -73,7 +73,7 @@ env_logger = { workspace = true, optional = true }
 # My dependencies
 #neutron-sdk = { workspace = true }
 neutron-std = { workspace = true }
-quartz-common = { path="../../../cycles-quartz/crates/common", features = ["contract"] }
+quartz-common = { path="../../cycles-quartz/crates/common", features = ["contract"] }
 getrandom = { version = "0.2.15", features = ["js"] }
 sha2 = "0.10.8"
 

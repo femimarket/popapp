@@ -1,0 +1,23 @@
+[package]
+name = "quartz-tm-stateless-verifier"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+categories = ["cryptography::cryptocurrencies", "wasm"]
+keywords = ["cosmos", "cosmwasm", "cycles", "quartz", "sgx"]
+readme = "README.md"
+description = """
+Stateless verification of a tendermint light client proof.
+"""
+
+[dependencies]
+# external
+displaydoc.workspace = true
+
+# cosmos
+tendermint.workspace = true
+tendermint-light-client.workspace = true

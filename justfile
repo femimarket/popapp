@@ -162,3 +162,6 @@ build-enclave:
   GOPATH=/Users/u/go \
   PATH=$GOPATH/bin:$PATH \
   cd cycles-quartz/examples/transfers && quartz --mock-sgx enclave build
+
+build-pop2-enclave:
+  ./build-pop2-enclave.sh

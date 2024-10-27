@@ -1,0 +1,28 @@
+[package]
+name = "quartz-common"
+version = "0.1.1"
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+categories = ["cryptography::cryptocurrencies", "wasm"]
+keywords = ["cosmos", "cosmwasm", "cycles", "quartz", "sgx"]
+readme = "README.md"
+description = """
+A wrapper crate around quartz-contract-core, quartz-enclave-core, and quartz-proto.
+"""
+
+[features]
+full = ["contract", "enclave", "proto"]
+contract = ["dep:quartz-contract-core"]
+enclave = ["dep:quartz-enclave-core", "proto"]
+proto = ["dep:quartz-proto"]
+mock-sgx-cw = ["quartz-contract-core/mock-sgx"]
+mock-sgx-enclave = ["quartz-enclave-core/mock-sgx"]
+
+[dependencies]
+quartz-contract-core = { workspace = true, optional = true }
+quartz-proto = { workspace = true, optional = true }
+quartz-enclave-core = { workspace = true, optional = true }

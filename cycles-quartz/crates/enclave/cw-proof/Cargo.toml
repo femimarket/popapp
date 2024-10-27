@@ -1,0 +1,33 @@
+[package]
+name = "quartz-cw-proof"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+categories = ["cryptography::cryptocurrencies", "wasm"]
+keywords = ["cosmos", "cosmwasm", "cycles", "quartz", "sgx"]
+readme = "README.md"
+description = """
+Merkle proofs of CosmWasm contract state. This crate contains proof types and a verifier implementation.
+"""
+
+[dependencies]
+# external
+clap.workspace = true
+displaydoc.workspace = true
+prost.workspace = true
+serde.workspace = true
+serde_with.workspace = true
+
+# cosmos
+cosmrs.workspace = true
+ics23.workspace = true
+tendermint.workspace = true
+tendermint-rpc.workspace = true
+log = "0.4.22"
+
+[dev-dependencies]
+hex.workspace = true

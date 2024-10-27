@@ -1,0 +1,37 @@
+[package]
+name = "cw-client"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+categories = ["cryptography::cryptocurrencies", "wasm"]
+keywords = ["cosmos", "cosmwasm", "cycles", "quartz", "sgx"]
+readme = "README.md"
+description = """
+Rust library for interacting with CosmWasm-enabled blockchains. 
+Deploy contracts, query them, and execute transactions.
+"""
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+anyhow.workspace = true
+async-trait.workspace = true
+color-eyre.workspace = true
+hex.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tonic.workspace = true
+
+cosmrs = { workspace = true, default-features = false, features = ["cosmwasm"] }
+cosmos-sdk-proto = { workspace = true, default-features = false, features = ["grpc", "grpc-transport"] }
+tendermint = { workspace = true, default-features = false }
+
+[dev-dependencies]
+tokio.workspace = true
+transfers-contract = { path = "../../../examples/transfers/contracts" }

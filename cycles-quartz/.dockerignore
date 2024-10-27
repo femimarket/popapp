@@ -1,0 +1,12 @@
+*
+!crates
+!examples
+!Cargo.lock
+!Cargo.toml
+**/.cache
+**/frontend
+**/target
+**/.gitignore
+**/Makefile
+**/*.md
+!**/README.md

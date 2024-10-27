@@ -1,0 +1,20 @@
+[package]
+name = "quartz-tcbinfo-msgs"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+keywords = ["cosmos", "cosmwasm", "cycles", "quartz", "sgx"]
+readme = "README.md"
+description = """
+Message and query definitions for the quartz-tcbinfo contract
+"""
+
+[dependencies]
+# external
+
+# cosmos
+cosmwasm-schema.workspace = true

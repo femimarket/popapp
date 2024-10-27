@@ -1,0 +1,76 @@
+# Based on https://github.com/actions-rs/example/blob/master/.github/workflows/quickstart.yml
+
+name: Cosmwasm basic
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/cosmwasm-basic.yml
+      - crates/**
+      - examples/**
+      - "!examples/transfers/frontend/**"
+  push:
+    branches: main
+    paths:
+      - .github/workflows/cosmwasm-basic.yml
+      - crates/**
+      - examples/**
+      - "!examples/transfers/frontend/**"
+
+env:
+  CARGO_INCREMENTAL: 0
+  CARGO_PROFILE_DEV_DEBUG: 1
+  CARGO_PROFILE_RELEASE_DEBUG: 1
+  RUST_BACKTRACE: short
+  CARGO_NET_RETRY: 10
+  RUSTUP_MAX_RETRIES: 10
+  CARGO_TERM_COLOR: always
+
+defaults:
+  run:
+    working-directory: examples/transfers/contracts
+
+jobs:
+  test-wasm:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install protobuf-compiler
+        run: sudo apt-get install -y protobuf-compiler
+
+      - name: Install wasm32-unknown-unknown toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          target: wasm32-unknown-unknown
+
+      - name: Run unit tests
+        run: cargo unit-test --locked
+        env:
+          RUST_BACKTRACE: 1
+
+      - name: Compile WASM contract
+        run: cargo wasm --locked
+        env:
+          RUSTFLAGS: "-C link-arg=-s"
+
+  schema:
+    name: Schema
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          target: wasm32-unknown-unknown
+
+      - name: Generate Schema
+        run: cargo schema --locked
+
+      - name: Schema Changes
+        # fails if any changes not committed
+        run: git diff --exit-code schema

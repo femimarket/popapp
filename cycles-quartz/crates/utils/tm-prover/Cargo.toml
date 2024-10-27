@@ -1,0 +1,40 @@
+[package]
+name = "quartz-tm-prover"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+categories = ["command-line-utilities", "cryptography::cryptocurrencies", "wasm"]
+keywords = ["cosmos", "cosmwasm", "cycles", "quartz", "sgx"]
+readme = "README.md"
+description = """
+CLI for generating a Merkle proof of CosmWasm state and accompanying tendermint light client proof (i.e. verification trace) for a given block height and trusted height/hash. Resulting proofs can be verified by quartz-tm-stateless-verifier.
+"""
+
+[[bin]]
+name = "main"
+path = "src/main.rs"
+
+[dependencies]
+# external
+clap.workspace = true
+color-eyre.workspace = true
+futures.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber = { workspace = true, features = ["env-filter"] }
+
+# cosmos
+cosmrs.workspace = true
+tendermint.workspace = true
+tendermint-rpc.workspace = true
+tendermint-light-client.workspace = true
+tendermint-light-client-detector.workspace = true
+
+# quartz
+quartz-cw-proof.workspace = true
