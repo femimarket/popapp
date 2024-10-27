@@ -1,4 +1,5 @@
 use std::str::FromStr;
+use abstract_app::sdk::TransferInterface;
 use crate::{contract::{
     Pop, PopResult
 }, msg::PopExecuteMsg, state::{CONFIG, COUNT}, PopError};
@@ -62,6 +63,11 @@ fn trade(deps: DepsMut, env: Env, info: MessageInfo, trade: Trade, module: Pop) 
         split[0].to_string(),
         split[1].to_string()
     )?;
+
+    // let bank = module.ibc_client().ics20_transfer()
+    // bank.send(
+    //
+    // )
 
 
     let mut trades = TRADES.load(deps.storage)?;

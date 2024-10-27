@@ -2,7 +2,7 @@ use crate::contract::Pop;
 
 use cosmwasm_schema::{cw_serde, QueryResponses};
 use cosmwasm_std::{Addr, HexBinary, Uint128};
-use neutron_std::types::slinky::oracle::v1::{GetAllCurrencyPairsResponse, GetPriceResponse, OracleQuerier};
+use neutron_std::types::slinky::oracle::v1::{GetAllCurrencyPairsResponse, GetPriceResponse, GetPricesResponse, OracleQuerier};
 use neutron_std::types::slinky::types::v1::CurrencyPair;
 use crate::state::{EncryptedTrade, Trade};
 use quartz_common::contract::handler::RawHandler;
@@ -20,7 +20,6 @@ abstract_app::app_msg_types!(Pop, PopExecuteMsg, PopQueryMsg);
 /// App instantiate message
 #[cosmwasm_schema::cw_serde]
 pub struct PopInstantiateMsg<RA = RawDefaultAttestation> {
-    pub count: i32,
     pub quartz: QuartzInstantiateMsg<RA>,
 }
 
@@ -88,6 +87,8 @@ pub enum PopQueryMsg {
     QueryRequests {},
     #[returns(QueryStateResponse)]
     QueryState {},
+    #[returns(QueryPairsResponse)]
+    QueryPairs {},
     // #[cw_orch(fn_name("query_ps"))]
     // #[returns(TradeResponse)]
     // Pairs {
@@ -114,5 +115,10 @@ pub struct QueryStateResponse {
 pub struct TradeResponse {
     pub price: GetPriceResponse,
     pub trade: Trade
+}
+
+#[cw_serde]
+pub struct QueryPairsResponse {
+    pub pairs: GetAllCurrencyPairsResponse,
 }
 

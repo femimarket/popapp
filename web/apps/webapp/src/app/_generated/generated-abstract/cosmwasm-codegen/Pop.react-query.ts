@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@abstract-money/cli/cosmjs";
 import { StdFee, Coin } from "@abstract-money/cli/cosmjs";
-import { InstantiateMsg, ExecuteMsg, OrderType, Decimal, HexBinary, Trade, QueryMsg, MigrateMsg, ConfigResponse, TradeResponse, GetPriceResponse, QuotePrice, Timestamp } from "./Pop.types";
+import { HexBinary, InstantiateMsg, RawInstantiateForRawDcapAttestation, RawDcapAttestation, RawCoreInstantiate, RawConfig, Duration, RawLightClientOpts, ExecuteMsg, OrderType, Decimal, Addr, Uint128, Trade, RawAttestedForRawAttestedMsgSansHandlerForUpdateMsgAndRawDcapAttestation, RawAttestedMsgSansHandlerForUpdateMsg, QueryMsg, MigrateMsg, ConfigResponse, QueryPairsResponse, GetAllCurrencyPairsResponse, CurrencyPair, QueryRequestsResponse, EncryptedTrade, QueryStateResponse, TradeResponse, GetPriceResponse, QuotePrice, Timestamp } from "./Pop.types";
 import { PopAppQueryClient, PopAppClient } from "./Pop.client";
 export const popQueryKeys = {
   contract: ([{
@@ -23,6 +23,18 @@ export const popQueryKeys = {
   queryTrade: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...popQueryKeys.address(contractAddress)[0],
     method: "query_trade",
     args
+  }] as const),
+  queryRequests: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...popQueryKeys.address(contractAddress)[0],
+    method: "query_requests",
+    args
+  }] as const),
+  queryState: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...popQueryKeys.address(contractAddress)[0],
+    method: "query_state",
+    args
+  }] as const),
+  queryPairs: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...popQueryKeys.address(contractAddress)[0],
+    method: "query_pairs",
+    args
   }] as const)
 };
 export interface PopReactQuery<TResponse, TData = TResponse> {
@@ -30,6 +42,33 @@ export interface PopReactQuery<TResponse, TData = TResponse> {
   options?: Omit<UseQueryOptions<TResponse, Error, TData>, "'queryKey' | 'queryFn' | 'initialData'"> & {
     initialData?: undefined;
   };
+}
+export interface PopQueryPairsQuery<TData> extends PopReactQuery<QueryPairsResponse, TData> {}
+export function usePopQueryPairsQuery<TData = QueryPairsResponse>({
+  client,
+  options
+}: PopQueryPairsQuery<TData>) {
+  return useQuery<QueryPairsResponse, Error, TData>(popQueryKeys.queryPairs(client?._moduleAddress), () => client ? client.queryPairs() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
+export interface PopQueryStateQuery<TData> extends PopReactQuery<QueryStateResponse, TData> {}
+export function usePopQueryStateQuery<TData = QueryStateResponse>({
+  client,
+  options
+}: PopQueryStateQuery<TData>) {
+  return useQuery<QueryStateResponse, Error, TData>(popQueryKeys.queryState(client?._moduleAddress), () => client ? client.queryState() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
+export interface PopQueryRequestsQuery<TData> extends PopReactQuery<QueryRequestsResponse, TData> {}
+export function usePopQueryRequestsQuery<TData = QueryRequestsResponse>({
+  client,
+  options
+}: PopQueryRequestsQuery<TData>) {
+  return useQuery<QueryRequestsResponse, Error, TData>(popQueryKeys.queryRequests(client?._moduleAddress), () => client ? client.queryRequests() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface PopQueryTradeQuery<TData> extends PopReactQuery<TradeResponse, TData> {
   args: undefined | {
@@ -56,6 +95,28 @@ export function usePopConfigQuery<TData = ConfigResponse>({
   return useQuery<ConfigResponse, Error, TData>(popQueryKeys.config(client?._moduleAddress), () => client ? client.config() : Promise.reject(new Error("Invalid client")), { ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
+}
+export interface PopUpdateMutation {
+  client: PopAppClient;
+  msg: {
+    data: RawAttestedForRawAttestedMsgSansHandlerForUpdateMsgAndRawDcapAttestation;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function usePopUpdateMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, PopUpdateMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, PopUpdateMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.update(msg, fee, memo, funds), options);
 }
 export interface PopTradeCiphertextMutation {
   client: PopAppClient;

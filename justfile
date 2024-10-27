@@ -146,17 +146,19 @@ publish2 name +CHAINS:
   just run-script publish {{name}} {{CHAINS}}
 
 publish-test:
+    just schema
     just publish2 pop pion-1
-    just run-script test pop pion-1
+    #just run-script live_test pop pion-1
+    cd web && npm run generate --workspace=webapp
 
 web-install:
-  cd web && npm i --workspaces && cd apps/webapp && npx shadcn@latest add button card input label switch tabs select
+  cd web && npm i --workspaces && cd apps/webapp && npx shadcn@latest add button card input label switch tabs select dialog table
 
 web-dev:
   cd web && npm run dev
 
 build-enclave:
   PATH="/opt/homebrew/opt/llvm/bin:$PATH" \
-  GOPATH=/Users/u/g \
+  GOPATH=/Users/u/go \
   PATH=$GOPATH/bin:$PATH \
   cd cycles-quartz/examples/transfers && quartz --mock-sgx enclave build

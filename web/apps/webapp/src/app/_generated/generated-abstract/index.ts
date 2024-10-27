@@ -55,6 +55,8 @@ import {
 } from './cosmwasm-codegen/Cw20Base.client'
 
 import {
+  usePopUpdateMutation,
+  PopUpdateMutation,
   usePopTradeCiphertextMutation,
   PopTradeCiphertextMutation,
   usePopTradeMutation,
@@ -65,6 +67,9 @@ import {
   PopIncrementMutation,
   usePopUpdateConfigMutation,
   PopUpdateConfigMutation,
+  usePopQueryPairsQuery,
+  usePopQueryStateQuery,
+  usePopQueryRequestsQuery,
   usePopQueryTradeQuery,
   usePopConfigQuery,
 } from './cosmwasm-codegen/Pop.react-query'
@@ -988,6 +993,74 @@ export const POP_MODULE_ID = 'pop:pop'
 
 export const pop = {
   queries: {
+    usePairsQuery: ({
+      options,
+      ...rest
+    }: Omit<
+      Parameters<typeof usePopQueryPairsQuery<PopTypes.QueryPairsResponse>>[0],
+      'client'
+    > & {
+      accountId: AccountId | undefined
+      chainName: string | undefined
+    }) => {
+      const { data: popAppQueryClient } = useAbstractModuleQueryClient({
+        moduleId: POP_MODULE_ID,
+        ...rest,
+        Module: PopAppQueryClient,
+        query: { enabled: options?.enabled },
+      })
+
+      return usePopQueryPairsQuery({
+        client: popAppQueryClient,
+        options,
+      })
+    },
+    useStateQuery: ({
+      options,
+      ...rest
+    }: Omit<
+      Parameters<typeof usePopQueryStateQuery<PopTypes.QueryStateResponse>>[0],
+      'client'
+    > & {
+      accountId: AccountId | undefined
+      chainName: string | undefined
+    }) => {
+      const { data: popAppQueryClient } = useAbstractModuleQueryClient({
+        moduleId: POP_MODULE_ID,
+        ...rest,
+        Module: PopAppQueryClient,
+        query: { enabled: options?.enabled },
+      })
+
+      return usePopQueryStateQuery({
+        client: popAppQueryClient,
+        options,
+      })
+    },
+    useRequestsQuery: ({
+      options,
+      ...rest
+    }: Omit<
+      Parameters<
+        typeof usePopQueryRequestsQuery<PopTypes.QueryRequestsResponse>
+      >[0],
+      'client'
+    > & {
+      accountId: AccountId | undefined
+      chainName: string | undefined
+    }) => {
+      const { data: popAppQueryClient } = useAbstractModuleQueryClient({
+        moduleId: POP_MODULE_ID,
+        ...rest,
+        Module: PopAppQueryClient,
+        query: { enabled: options?.enabled },
+      })
+
+      return usePopQueryRequestsQuery({
+        client: popAppQueryClient,
+        options,
+      })
+    },
     useTradeQuery: ({
       options,
       args,
@@ -1036,6 +1109,66 @@ export const pop = {
     },
   },
   mutations: {
+    useUpdate: (
+      {
+        accountId,
+        chainName,
+        sender,
+      }: {
+        accountId: AccountId | undefined
+        chainName: string | undefined
+        sender?: string | undefined
+      },
+      options?: Omit<
+        UseMutationOptions<
+          ExecuteResult,
+          Error,
+          Omit<PopUpdateMutation, 'client'>
+        >,
+        'mutationFn'
+      >,
+    ) => {
+      const {
+        data: popAppClient,
+        // TODO: figure out what to do with those
+        // isLoading: isPopAppClientLoading,
+        // isError: isPopAppClientError,
+        // error: popAppClientError,
+      } = useAbstractModuleClient({
+        moduleId: POP_MODULE_ID,
+        accountId,
+        chainName,
+        sender,
+
+        Module: PopAppClient,
+      })
+
+      const {
+        mutate: mutate_,
+        mutateAsync: mutateAsync_,
+        ...rest
+      } = usePopUpdateMutation(options)
+
+      const mutate = useMemo(() => {
+        if (!popAppClient) return undefined
+
+        return (
+          variables: Omit<Parameters<typeof mutate_>[0], 'client'>,
+          options?: Parameters<typeof mutate_>[1],
+        ) => mutate_({ client: popAppClient, ...variables }, options)
+      }, [mutate_, popAppClient])
+
+      const mutateAsync = useMemo(() => {
+        if (!popAppClient) return undefined
+
+        return (
+          variables: Omit<Parameters<typeof mutateAsync_>[0], 'client'>,
+          options?: Parameters<typeof mutateAsync_>[1],
+        ) => mutateAsync_({ client: popAppClient, ...variables }, options)
+      }, [mutateAsync_, popAppClient])
+
+      return { mutate, mutateAsync, ...rest } as const
+    },
     useTradeCiphertext: (
       {
         accountId,

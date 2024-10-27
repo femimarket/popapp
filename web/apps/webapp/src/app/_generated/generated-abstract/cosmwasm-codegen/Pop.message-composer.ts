@@ -10,7 +10,7 @@ import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import { toUtf8 } from "@cosmjs/encoding";
 import { AppExecuteMsg, AppExecuteMsgFactory } from "@abstract-money/core";
-import { InstantiateMsg, ExecuteMsg, OrderType, Decimal, HexBinary, Trade, QueryMsg, MigrateMsg, ConfigResponse, TradeResponse, GetPriceResponse, QuotePrice, Timestamp } from "./Pop.types";
+import { HexBinary, InstantiateMsg, RawInstantiateForRawDcapAttestation, RawDcapAttestation, RawCoreInstantiate, RawConfig, Duration, RawLightClientOpts, ExecuteMsg, OrderType, Decimal, Addr, Uint128, Trade, RawAttestedForRawAttestedMsgSansHandlerForUpdateMsgAndRawDcapAttestation, RawAttestedMsgSansHandlerForUpdateMsg, QueryMsg, MigrateMsg, ConfigResponse, QueryPairsResponse, GetAllCurrencyPairsResponse, CurrencyPair, QueryRequestsResponse, EncryptedTrade, QueryStateResponse, TradeResponse, GetPriceResponse, QuotePrice, Timestamp } from "./Pop.types";
 export interface PopMsg {
 contractAddress: string;
 sender: string;
@@ -33,6 +33,11 @@ tradeCiphertext: ({
   ciphertext: number[];
   digest: HexBinary;
 }, funds_?: Coin[]) => MsgExecuteContractEncodeObject;
+update: ({
+  data
+}: {
+  data: RawAttestedForRawAttestedMsgSansHandlerForUpdateMsgAndRawDcapAttestation;
+}, funds_?: Coin[]) => MsgExecuteContractEncodeObject;
 }
 export class PopMsgComposer implements PopMsg {
 sender: string;
@@ -46,6 +51,7 @@ constructor(sender: string, contractAddress: string) {
   this.reset = this.reset.bind(this);
   this.trade = this.trade.bind(this);
   this.tradeCiphertext = this.tradeCiphertext.bind(this);
+  this.update = this.update.bind(this);
 }
 
 updateConfig = (funds_?: Coin[]): MsgExecuteContractEncodeObject => {
@@ -131,6 +137,27 @@ tradeCiphertext = ({
     trade_ciphertext: {
       ciphertext,
       digest
+    }
+  };
+  const moduleMsg: AppExecuteMsg<ExecuteMsg> = AppExecuteMsgFactory.executeApp(msg);
+  return {
+    typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+    value: MsgExecuteContract.fromPartial({
+      sender: this.sender,
+      contract: this.contractAddress,
+      msg: toUtf8(JSON.stringify(moduleMsg)),
+      funds: funds_
+    })
+  };
+};
+update = ({
+  data
+}: {
+  data: RawAttestedForRawAttestedMsgSansHandlerForUpdateMsgAndRawDcapAttestation;
+}, funds_?: Coin[]): MsgExecuteContractEncodeObject => {
+  const _msg = {
+    update: {
+      data
     }
   };
   const moduleMsg: AppExecuteMsg<ExecuteMsg> = AppExecuteMsgFactory.executeApp(msg);

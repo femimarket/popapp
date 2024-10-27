@@ -8,7 +8,7 @@ import { CamelCasedProperties } from "type-fest";
 import { SigningCosmWasmClient, ExecuteResult } from "@abstract-money/cli/cosmjs";
 import { AccountPublicClient, AccountWalletClient, AppExecuteMsg, AppExecuteMsgFactory, AdapterExecuteMsg, AdapterExecuteMsgFactory } from "@abstract-money/core";
 import { StdFee, Coin } from "@abstract-money/cli/cosmjs";
-import { InstantiateMsg, ExecuteMsg, OrderType, Decimal, HexBinary, Trade, QueryMsg, MigrateMsg, ConfigResponse, TradeResponse, GetPriceResponse, QuotePrice, Timestamp } from "./Pop.types";
+import { HexBinary, InstantiateMsg, RawInstantiateForRawDcapAttestation, RawDcapAttestation, RawCoreInstantiate, RawConfig, Duration, RawLightClientOpts, ExecuteMsg, OrderType, Decimal, Addr, Uint128, Trade, RawAttestedForRawAttestedMsgSansHandlerForUpdateMsgAndRawDcapAttestation, RawAttestedMsgSansHandlerForUpdateMsg, QueryMsg, MigrateMsg, ConfigResponse, QueryPairsResponse, GetAllCurrencyPairsResponse, CurrencyPair, QueryRequestsResponse, EncryptedTrade, QueryStateResponse, TradeResponse, GetPriceResponse, QuotePrice, Timestamp } from "./Pop.types";
 import { PopQueryMsgBuilder, PopExecuteMsgBuilder } from "./Pop.message-builder";
 export interface IPopAppQueryClient {
   moduleId: string;
@@ -18,6 +18,9 @@ export interface IPopAppQueryClient {
   queryTrade: (params: CamelCasedProperties<Extract<QueryMsg, {
     query_trade: unknown;
   }>["query_trade"]>) => Promise<TradeResponse>;
+  queryRequests: () => Promise<QueryRequestsResponse>;
+  queryState: () => Promise<QueryStateResponse>;
+  queryPairs: () => Promise<QueryPairsResponse>;
   getAddress: () => Promise<string>;
 }
 export class PopAppQueryClient implements IPopAppQueryClient {
@@ -36,6 +39,9 @@ export class PopAppQueryClient implements IPopAppQueryClient {
     this.moduleId = moduleId;
     this.config = this.config.bind(this);
     this.queryTrade = this.queryTrade.bind(this);
+    this.queryRequests = this.queryRequests.bind(this);
+    this.queryState = this.queryState.bind(this);
+    this.queryPairs = this.queryPairs.bind(this);
   }
 
   config = async (): Promise<ConfigResponse> => {
@@ -45,6 +51,15 @@ export class PopAppQueryClient implements IPopAppQueryClient {
     query_trade: unknown;
   }>["query_trade"]>): Promise<TradeResponse> => {
     return this._query(PopQueryMsgBuilder.queryTrade(params));
+  };
+  queryRequests = async (): Promise<QueryRequestsResponse> => {
+    return this._query(PopQueryMsgBuilder.queryRequests());
+  };
+  queryState = async (): Promise<QueryStateResponse> => {
+    return this._query(PopQueryMsgBuilder.queryState());
+  };
+  queryPairs = async (): Promise<QueryPairsResponse> => {
+    return this._query(PopQueryMsgBuilder.queryPairs());
   };
   getAddress = async (): Promise<string> => {
     if (!this._moduleAddress) {
@@ -82,6 +97,9 @@ export interface IPopAppClient extends IPopAppQueryClient {
   tradeCiphertext: (params: CamelCasedProperties<Extract<ExecuteMsg, {
     trade_ciphertext: unknown;
   }>["trade_ciphertext"]>, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
+  update: (params: CamelCasedProperties<Extract<ExecuteMsg, {
+    update: unknown;
+  }>["update"]>, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
 }
 export class PopAppClient extends PopAppQueryClient implements IPopAppClient {
   accountWalletClient: AccountWalletClient;
@@ -105,6 +123,7 @@ export class PopAppClient extends PopAppQueryClient implements IPopAppClient {
     this.reset = this.reset.bind(this);
     this.trade = this.trade.bind(this);
     this.tradeCiphertext = this.tradeCiphertext.bind(this);
+    this.update = this.update.bind(this);
   }
 
   updateConfig = async (fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
@@ -127,6 +146,11 @@ export class PopAppClient extends PopAppQueryClient implements IPopAppClient {
     trade_ciphertext: unknown;
   }>["trade_ciphertext"]>, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
     return this._execute(PopExecuteMsgBuilder.tradeCiphertext(params), fee_, memo_, funds_);
+  };
+  update = async (params: CamelCasedProperties<Extract<ExecuteMsg, {
+    update: unknown;
+  }>["update"]>, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
+    return this._execute(PopExecuteMsgBuilder.update(params), fee_, memo_, funds_);
   };
   _execute = async (msg: ExecuteMsg, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
     const signingCwClient = await this.accountWalletClient.getSigningCosmWasmClient();

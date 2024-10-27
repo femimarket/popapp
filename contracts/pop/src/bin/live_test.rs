@@ -22,6 +22,7 @@ use slinky::msg::{SlinkyQueryMsgFns};
 use abstract_app::std::account::QueryMsgFns as AccountQueryMsgFns;
 use slinky::SlinkyInterface;
 use abstract_app::abstract_interface::AccountExecFns;
+use quartz_common::contract::prelude::QuartzInstantiateMsg;
 
 const TESTACCOUNT: &str = "testaccount10";
 
@@ -57,7 +58,7 @@ fn test(networks: Vec<ChainInfo>) -> anyhow::Result<()> {
 
         let pop_app = test_account
             .install_app_with_dependencies::<PopInterface::<_>>(&PopInstantiateMsg {
-                count: 3,
+                quartz: Default::default(),
             }, Empty {}, &[])?;
 
 

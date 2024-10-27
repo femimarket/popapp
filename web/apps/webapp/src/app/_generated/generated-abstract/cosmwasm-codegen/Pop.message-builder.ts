@@ -5,7 +5,7 @@
 * and run the @abstract-money/ts-codegen generate command to regenerate this file.
 */
 
-import { InstantiateMsg, ExecuteMsg, OrderType, Decimal, HexBinary, Trade, QueryMsg, MigrateMsg, ConfigResponse, TradeResponse, GetPriceResponse, QuotePrice, Timestamp } from "./Pop.types";
+import { HexBinary, InstantiateMsg, RawInstantiateForRawDcapAttestation, RawDcapAttestation, RawCoreInstantiate, RawConfig, Duration, RawLightClientOpts, ExecuteMsg, OrderType, Decimal, Addr, Uint128, Trade, RawAttestedForRawAttestedMsgSansHandlerForUpdateMsgAndRawDcapAttestation, RawAttestedMsgSansHandlerForUpdateMsg, QueryMsg, MigrateMsg, ConfigResponse, QueryPairsResponse, GetAllCurrencyPairsResponse, CurrencyPair, QueryRequestsResponse, EncryptedTrade, QueryStateResponse, TradeResponse, GetPriceResponse, QuotePrice, Timestamp } from "./Pop.types";
 import { CamelCasedProperties } from "type-fest";
 export abstract class PopExecuteMsgBuilder {
 static updateConfig = (): ExecuteMsg => {
@@ -53,6 +53,17 @@ static tradeCiphertext = ({
     } as const)
   };
 };
+static update = ({
+  data
+}: CamelCasedProperties<Extract<ExecuteMsg, {
+  update: unknown;
+}>["update"]>): ExecuteMsg => {
+  return {
+    update: ({
+      data
+    } as const)
+  };
+};
 }
 export abstract class PopQueryMsgBuilder {
 static config = (): QueryMsg => {
@@ -71,6 +82,21 @@ static queryTrade = ({
       base,
       quote
     } as const)
+  };
+};
+static queryRequests = (): QueryMsg => {
+  return {
+    query_requests: ({} as const)
+  };
+};
+static queryState = (): QueryMsg => {
+  return {
+    query_state: ({} as const)
+  };
+};
+static queryPairs = (): QueryMsg => {
+  return {
+    query_pairs: ({} as const)
   };
 };
 }

@@ -19,7 +19,7 @@ pub fn instantiate_handler(
         .map_err(|x|PopError::Std(StdError::generic_err(x.to_string())))?;
 
     CONFIG.save(deps.storage, &config)?;
-    COUNT.save(deps.storage, &msg.count)?;
+    COUNT.save(deps.storage, &2)?;
 
     let state = HexBinary::from(&[0x00]);
     STATE.save(deps.storage, &state)?;

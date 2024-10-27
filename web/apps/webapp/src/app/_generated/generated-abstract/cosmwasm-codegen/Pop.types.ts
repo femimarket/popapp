@@ -4,8 +4,40 @@
 * and run the @abstract-money/ts-codegen generate command to regenerate this file.
 */
 
+export type HexBinary = string;
 export interface InstantiateMsg {
-  count: number;
+  quartz: RawInstantiateForRawDcapAttestation;
+}
+export interface RawInstantiateForRawDcapAttestation {
+  attestation: RawDcapAttestation;
+  msg: RawCoreInstantiate;
+}
+export interface RawDcapAttestation {
+  collateral: HexBinary;
+  quote: HexBinary;
+}
+export interface RawCoreInstantiate {
+  config: RawConfig;
+}
+export interface RawConfig {
+  dcap_verifier_contract?: string | null;
+  epoch_duration: Duration;
+  light_client_opts: RawLightClientOpts;
+  mr_enclave: HexBinary;
+  tcbinfo_contract?: string | null;
+}
+export interface Duration {
+  nanos: number;
+  secs: number;
+}
+export interface RawLightClientOpts {
+  chain_id: string;
+  max_block_lag: number;
+  max_clock_drift: number;
+  trust_threshold: [number, number];
+  trusted_hash: HexBinary;
+  trusted_height: number;
+  trusting_period: number;
 }
 export type ExecuteMsg = {
   update_config: {};
@@ -24,10 +56,15 @@ export type ExecuteMsg = {
     ciphertext: number[];
     digest: HexBinary;
   };
+} | {
+  update: {
+    data: RawAttestedForRawAttestedMsgSansHandlerForUpdateMsgAndRawDcapAttestation;
+  };
 };
 export type OrderType = "market";
 export type Decimal = string;
-export type HexBinary = string;
+export type Addr = string;
+export type Uint128 = string;
 export interface Trade {
   asset: string;
   buy: boolean;
@@ -39,6 +76,15 @@ export interface Trade {
   sl: Decimal;
   tp: Decimal;
 }
+export interface RawAttestedForRawAttestedMsgSansHandlerForUpdateMsgAndRawDcapAttestation {
+  attestation: RawDcapAttestation;
+  msg: RawAttestedMsgSansHandlerForUpdateMsg;
+}
+export interface RawAttestedMsgSansHandlerForUpdateMsg {
+  ciphertext: HexBinary;
+  quantity: number;
+  withdrawals: [Addr, Uint128][];
+}
 export type QueryMsg = {
   config: {};
 } | {
@@ -46,9 +92,35 @@ export type QueryMsg = {
     base: string;
     quote: string;
   };
+} | {
+  query_requests: {};
+} | {
+  query_state: {};
+} | {
+  query_pairs: {};
 };
 export interface MigrateMsg {}
 export interface ConfigResponse {}
+export interface QueryPairsResponse {
+  pairs: GetAllCurrencyPairsResponse;
+}
+export interface GetAllCurrencyPairsResponse {
+  currency_pairs: CurrencyPair[];
+}
+export interface CurrencyPair {
+  base: string;
+  quote: string;
+}
+export interface QueryRequestsResponse {
+  requests: EncryptedTrade[];
+}
+export interface EncryptedTrade {
+  data: HexBinary;
+  price: Decimal;
+}
+export interface QueryStateResponse {
+  data: HexBinary;
+}
 export interface TradeResponse {
   price: GetPriceResponse;
   trade: Trade;
