@@ -165,3 +165,9 @@ build-enclave:
 
 build-pop2-enclave:
   ./build-pop2-enclave.sh
+
+start-pop2-enclave:
+  ./start-pop2-enclave.sh
+
+deploy-pop2-enclave:
+  ./deploy-pop2-enclave.sh

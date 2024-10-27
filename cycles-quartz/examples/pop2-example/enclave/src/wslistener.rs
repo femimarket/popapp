@@ -344,7 +344,7 @@ where
 
     // Build on-chain response
     // TODO add non-mock support
-    let trade_msg = ExecuteMsg::Update(AttestedMsg {
+    let trade_msg = ExecuteMsg::UpdateTrade(AttestedMsg {
         msg: RawAttestedMsgSansHandler(attested.msg),
         attestation: attested.attestation,
     });

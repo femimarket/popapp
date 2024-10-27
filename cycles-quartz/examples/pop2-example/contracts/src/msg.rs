@@ -39,6 +39,7 @@ pub enum ExecuteMsg<RA = RawDefaultAttestation> {
 
     // Enclave msgs
     Update(AttestedMsg<execute::UpdateMsg, RA>),
+    UpdateTrade(AttestedMsg<execute::UpdateMsg, RA>),
     QueryResponse(AttestedMsg<execute::QueryResponseMsg, RA>),
 }
 

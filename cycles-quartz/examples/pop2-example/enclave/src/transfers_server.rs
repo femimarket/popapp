@@ -31,6 +31,7 @@ use crate::{
     },
     state::{RawBalance, RawState, State},
 };
+use crate::state::RawTradeState;
 
 impl<A: Attestor> IntoServer for TransfersService<A> {
     type Server = SettlementServer<TransfersService<A>>;
@@ -158,10 +159,10 @@ where
     async fn run(&self, request: Request<UpdateRequest>) -> TonicResult<Response<UpdateResponse>> {
         // Serialize request into struct containing State and the Requests vec
 
-        let message = request.into_inner().message.clone();
+        let org_message = request.into_inner().message.clone();
 
         let message: Result<ProofOfPublication<UpdateRequestMessage>,Status> = {
-            serde_json::from_str(&message).map_err(|e| Status::invalid_argument(e.to_string()))
+            serde_json::from_str(&org_message).map_err(|e| Status::invalid_argument(e.to_string()))
         };
 
         let msg = if let Ok(message) = message {
@@ -301,7 +302,7 @@ where
             msg
         } else {
             let message: ProofOfPublication<UpdateTradeRequestMessage> = {
-                serde_json::from_str(&message).map_err(|e| Status::invalid_argument(e.to_string()))?;
+                serde_json::from_str(&org_message).map_err(|e| Status::invalid_argument(e.to_string()))?
             };
 
             let (proof_value, message) = message
@@ -371,7 +372,10 @@ where
                         .ok_or(Status::internal("SigningKey unavailable"))?,
                 );
 
-                encrypt_state(RawState::from(state), pk)
+                let raw =  HexBinary::from(serde_json::to_vec(&state).unwrap());
+                encrypt_trade_state(RawTradeState{
+                    state:raw
+                }, pk)
                     .map_err(|e| Status::invalid_argument(e.to_string()))?
             };
 
@@ -502,6 +506,15 @@ fn decrypt_state(sk: &SigningKey, ciphertext: &HexBinary) -> TonicResult<State> 
 
 
 fn encrypt_state(state: RawState, enclave_pk: VerifyingKey) -> TonicResult<RawCipherText> {
+    let serialized_state = serde_json::to_string(&state).expect("infallible serializer");
+
+    match encrypt(&enclave_pk.to_sec1_bytes(), serialized_state.as_bytes()) {
+        Ok(encrypted_state) => Ok(encrypted_state.into()),
+        Err(e) => Err(Status::internal(format!("Encryption error: {}", e))),
+    }
+}
+
+fn encrypt_trade_state(state: RawTradeState, enclave_pk: VerifyingKey) -> TonicResult<RawCipherText> {
     let serialized_state = serde_json::to_string(&state).expect("infallible serializer");
 
     match encrypt(&enclave_pk.to_sec1_bytes(), serialized_state.as_bytes()) {

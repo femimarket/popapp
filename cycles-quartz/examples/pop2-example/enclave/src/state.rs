@@ -10,7 +10,7 @@ pub struct State {
     pub state: BTreeMap<Addr, Uint128>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug,Deserialize, Serialize)]
 pub struct TradeState {
     pub state: Vec<DecryptedTrade>,
 }
@@ -20,6 +20,11 @@ pub struct TradeState {
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct RawState {
     pub state: BTreeMap<Addr, Uint128>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
+pub struct RawTradeState {
+    pub state: HexBinary,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -33,11 +38,27 @@ impl From<State> for RawState {
     }
 }
 
+impl From<TradeState> for RawTradeState {
+    fn from(o: TradeState) -> Self {
+        Self { state: HexBinary::from(serde_json::to_vec(&o).unwrap()) }
+    }
+}
+
+
 impl TryFrom<RawState> for State {
     type Error = anyhow::Error;
 
     fn try_from(o: RawState) -> Result<Self, anyhow::Error> {
         Ok(Self { state: o.state })
+    }
+}
+
+impl TryFrom<RawTradeState> for TradeState {
+    type Error = anyhow::Error;
+
+    fn try_from(o: RawTradeState) -> Result<Self, anyhow::Error> {
+        let a = serde_json::from_slice::<Self>(&o.state.to_vec())?;
+        Ok(Self { state:a.state  })
     }
 }
 

@@ -85,6 +85,27 @@ pub fn execute(
             )
         }
 
+        ExecuteMsg::UpdateTrade(attested_msg) => {
+            let _ = attested_msg
+                .clone()
+                .handle_raw(deps.branch(), &env, &info)?;
+            let UpdateMsg {
+                ciphertext,
+                quantity,
+                withdrawals,
+            } = attested_msg.msg.0;
+            update_trade(
+                deps,
+                env,
+                info,
+                UpdateMsg {
+                    ciphertext,
+                    quantity,
+                    withdrawals,
+                },
+            )
+        }
+
         ExecuteMsg::QueryResponse(attested_msg) => {
             let _ = attested_msg
                 .clone()
@@ -115,7 +136,8 @@ pub mod execute {
         msg::execute::{QueryRequestMsg, QueryResponseMsg, Request, TransferRequestMsg, UpdateMsg},
         state::{BALANCES, DENOM, REQUESTS, STATE},
     };
-    use crate::msg::execute::TradeRequestMsg;
+    use crate::msg::execute::{TradeRequest, TradeRequestMsg};
+    use crate::state::{TRADE_REQUESTS, TRADE_STATE};
 
     pub fn deposit(deps: DepsMut, _env: Env, info: MessageInfo) -> Result<Response, ContractError> {
         let denom: String = DENOM.load(deps.storage)?;
@@ -187,11 +209,11 @@ pub mod execute {
         _info: MessageInfo,
         msg: TradeRequestMsg,
     ) -> Result<Response, ContractError> {
-        let mut requests = REQUESTS.load(deps.storage)?;
+        let mut requests = TRADE_REQUESTS.load(deps.storage)?;
 
-        requests.push(Request::Trade(msg.ciphertext));
+        requests.push(TradeRequest::Trade(msg.ciphertext));
 
-        REQUESTS.save(deps.storage, &requests)?;
+        TRADE_REQUESTS.save(deps.storage, &requests)?;
 
         let event = Event::new("trade").add_attribute("action", "user");
         let resp = Response::new().add_event(event);
@@ -227,6 +249,27 @@ pub mod execute {
             });
 
         let resp = Response::new().add_messages(messages);
+
+        Ok(resp)
+    }
+
+    pub fn update_trade(
+        deps: DepsMut,
+        _env: Env,
+        _info: MessageInfo,
+        msg: UpdateMsg,
+    ) -> Result<Response, ContractError> {
+        // Store state
+        TRADE_STATE.save(deps.storage, &msg.ciphertext)?;
+
+        // Clear queue
+        let mut requests: Vec<TradeRequest> = TRADE_REQUESTS.load(deps.storage)?;
+
+        requests.drain(0..msg.quantity as usize);
+
+        TRADE_REQUESTS.save(deps.storage, &requests)?;
+
+        let resp = Response::new();
 
         Ok(resp)
     }
