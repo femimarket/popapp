@@ -59,6 +59,7 @@ export default function RootLayout({
           // @ts-ignore
           client={client}
           grazOptions={{
+            //@ts-ignore
             chains: [appChain],
             chainsConfig: {
               [appChain.chainId]: {

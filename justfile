@@ -171,3 +171,6 @@ start-pop2-enclave:
 
 deploy-pop2-enclave:
   ./deploy-pop2-enclave.sh
+
+tee address:
+  ./tee.sh {{address}}

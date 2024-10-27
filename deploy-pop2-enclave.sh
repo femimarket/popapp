@@ -7,3 +7,4 @@
   quartz --mock-sgx contract deploy \
   --contract-manifest "contracts/Cargo.toml" \
   --init-msg '{"denom":"untrn"}'
+
