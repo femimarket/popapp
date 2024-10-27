@@ -19,7 +19,13 @@ To run Proof of Profit, ensure you have:
 
 ### Instructions
 
-### 1. Smart Contracts
+### 1. Build All Components
+To build the entire application, run:
+   ```bash
+   just build-all
+   ```
+
+### 2. Smart Contracts
 The frontend relies on smart contracts deployed to the testnet.
 1. Deploy the smart contracts using:
    ```bash
@@ -27,7 +33,7 @@ The frontend relies on smart contracts deployed to the testnet.
    ```
    Ensure you have testnet funds.
 
-### 2. Frontend
+### 3. Frontend
 1. Navigate to the `web` directory.
 2. Start the frontend:
    ```bash
@@ -35,7 +41,7 @@ The frontend relies on smart contracts deployed to the testnet.
    ```
    > **Note**: Frontend requires smart contracts to be active.
 
-### 3. Cycles-Quartz (TEE Environment)
+### 4. Cycles-Quartz (TEE Environment)
 A private TEE environment (using Cycles-Quartz) allows local testing:
 1. Build the Quartz CLI:
    ```bash
@@ -73,4 +79,3 @@ A secure SGX TEE monitors the state and decrypts/encrypts data for secure commun
 
 ## Future Vision
 This protocol allows traders to prove profitability in a controlled environment, leading to potential investment and on-chain trading. The long-term goal is to create a versatile protocol that interacts with decentralized exchanges (DEXes) for liquidity and cross-chain compatibility. **Currently, the focus is on refining the simulated trading environment.**
-

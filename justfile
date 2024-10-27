@@ -145,6 +145,7 @@ publish2 name +CHAINS:
   cp target/wasm32-unknown-unknown/release/pop.wasm artifacts
   just run-script publish {{name}} {{CHAINS}}
 
+
 publish-test:
     just schema
     just publish2 pop pion-1
@@ -158,10 +159,7 @@ web-dev:
   cd web && npm run dev
 
 build-enclave:
-  PATH="/opt/homebrew/opt/llvm/bin:$PATH" \
-  GOPATH=/Users/u/go \
-  PATH=$GOPATH/bin:$PATH \
-  cd cycles-quartz/examples/transfers && quartz --mock-sgx enclave build
+  ./build-pop-enclave.sh
 
 build-pop2-enclave:
   ./build-pop2-enclave.sh
@@ -174,3 +172,8 @@ deploy-pop2-enclave:
 
 tee address:
   ./tee.sh {{address}}
+
+build-all:
+  just publish-test
+  just build-enclave
+  just build-pop2-enclave
