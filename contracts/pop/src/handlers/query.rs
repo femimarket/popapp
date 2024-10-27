@@ -6,7 +6,8 @@ use cosmwasm_std::{to_json_binary, Binary, Deps, Env, StdError, StdResult};
 use neutron_std::types::slinky::oracle::v1::{GetAllCurrencyPairsResponse, GetPriceResponse, OracleQuerier};
 use neutron_std::types::slinky::types::v1::CurrencyPair;
 use slinky::api::{Slinky, SlinkyApi};
-use crate::state::{OrderType, Trade};
+use crate::msg::{QueryRequestsResponse, QueryStateResponse};
+use crate::state::{EncryptedTrade, OrderType, Trade, STATE, TRADE_REQUESTS};
 
 pub fn query_handler(
     deps: Deps,
@@ -17,6 +18,8 @@ pub fn query_handler(
     match msg {
         PopQueryMsg::Config {} => to_json_binary(&query_config(deps)?),
         PopQueryMsg::QueryTrade {base,quote} => to_json_binary(&query_trade(deps, _env, module, base, quote)?),
+        PopQueryMsg::QueryRequests {} => to_json_binary(&query_requests(deps, _env, module)?),
+        PopQueryMsg::QueryState {} => to_json_binary(&query_state(deps, _env, module)?),
     }
     .map_err(Into::into)
 }
@@ -25,6 +28,17 @@ fn query_config(deps: Deps) -> StdResult<ConfigResponse> {
     let _config = CONFIG.load(deps.storage)?;
     Ok(ConfigResponse {})
 }
+
+fn query_requests(deps: Deps, env: Env, module:&Pop) -> StdResult<QueryRequestsResponse> {
+    let d = TRADE_REQUESTS.load(deps.storage)?;
+    Ok(QueryRequestsResponse{requests:d})
+}
+
+fn query_state(deps: Deps, env: Env, module:&Pop) -> StdResult<QueryStateResponse> {
+    let d = STATE.load(deps.storage)?;
+    Ok(QueryStateResponse{data:d})
+}
+
 
 fn query_trade(deps: Deps, env: Env, module: &Pop, base: String,quote: String) -> PopResult<TradeResponse> {
     let slinky = module.slinky(deps);

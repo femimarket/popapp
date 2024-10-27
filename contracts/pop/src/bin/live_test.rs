@@ -23,7 +23,7 @@ use abstract_app::std::account::QueryMsgFns as AccountQueryMsgFns;
 use slinky::SlinkyInterface;
 use abstract_app::abstract_interface::AccountExecFns;
 
-const TESTACCOUNT: &str = "testaccount9";
+const TESTACCOUNT: &str = "testaccount10";
 
 fn test(networks: Vec<ChainInfo>) -> anyhow::Result<()> {
     // run for each requested network

@@ -13,8 +13,8 @@ import {pop} from "@/app/_generated/generated-abstract";
 
 export const CreateAbstractAccount: React.FC = () => {
   const { chainName, chainId } = appChain
-
   const { data: cosmosAccount } = graz_useAccount({ chainId })
+
   const { mutate: createAccount, isLoading: isCreating, isSuccess: isAccountCreated } = useCreateAccountMonarchy({
     chainName,
   })
@@ -97,6 +97,7 @@ export const CreateAbstractAccount: React.FC = () => {
     accountId: userAccountId,
     chainName: appChain.chainName
   })
+
 
   console.log('popConfig', popConfig)
 

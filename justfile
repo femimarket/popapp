@@ -140,7 +140,7 @@ publish-cheat name +CHAINS: (wasm-cheat name)
 publish2 name +CHAINS:
   #!/usr/bin/env bash
   set -euxo pipefail
-  cargo bump
+  #cargo bump
   RUSTFLAGS='-C link-arg=-s' cargo wasm
   cp target/wasm32-unknown-unknown/release/pop.wasm artifacts
   just run-script publish {{name}} {{CHAINS}}
@@ -148,3 +148,15 @@ publish2 name +CHAINS:
 publish-test:
     just publish2 pop pion-1
     just run-script test pop pion-1
+
+web-install:
+  cd web && npm i --workspaces && cd apps/webapp && npx shadcn@latest add button card input label switch tabs select
+
+web-dev:
+  cd web && npm run dev
+
+build-enclave:
+  PATH="/opt/homebrew/opt/llvm/bin:$PATH" \
+  GOPATH=/Users/u/g \
+  PATH=$GOPATH/bin:$PATH \
+  cd cycles-quartz/examples/transfers && quartz --mock-sgx enclave build
